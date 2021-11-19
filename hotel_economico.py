@@ -1,5 +1,4 @@
 from datetime import datetime
-from collections import Counter
 
 hoteis = [{
     'nome': 'Parque das Flores',
@@ -28,25 +27,32 @@ hoteis = [{
 ]
 
 def hotelMaisEconomico(string_de_entrada):
+    # Tratamento da entrada
     string_de_entrada = string_de_entrada.split(': ')
     programa = string_de_entrada[0]
     datas = string_de_entrada[1].split(', ')
+
+    # Arrays para poder saber quantos dias são de semana e quantos são de fim de semana
+    diasDeSemana = []
+    finaisDeSemana = []
+
+    for i in range(len(datas)):
+        datas[i] = datetime.strptime(datas[i], '%d/%m/%Y').date()
+        if datas[i].weekday() <= 4:
+            diasDeSemana.append(datas[i])
+        else:
+            finaisDeSemana.append(datas[i])
+
     hotel_valor_total = []
 
     for hotel in hoteis:
         valor = 0
-        for data in datas:
-            data = datetime.strptime(data, '%d/%m/%Y').date()
-            if programa == 'Regular':
-                if data.weekday() <= 4:
-                    valor += hotel['regularSemana']
-                else:
-                    valor += hotel['regularFind']
-            elif programa == 'Fidelidade':
-                if data.weekday() <= 4:
-                    valor += hotel['fielSemana']
-                else:
-                    valor += hotel['fielFind']
+        if programa == 'Regular':
+            valor = hotel['regularSemana'] * len(diasDeSemana)
+            valor += hotel['regularFind'] * len(finaisDeSemana)
+        else:
+            valor = hotel['fielSemana'] * len(diasDeSemana)
+            valor += hotel['fielFind'] * len(finaisDeSemana)
 
         hotel_valor_total.append({'nome': hotel['nome'],'classificacao':hotel['classificacao'],'valorTotalEstadia':valor})
 
